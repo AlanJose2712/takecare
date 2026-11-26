@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: takecare
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: takecare
+  template:
+    metadata:
+      labels:
+        app: takecare
+    spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.36
+          command: ['sh', '-c', 'until nc -z takecare-mysql 3306; do echo waiting for mysql; sleep 3; done']
+      containers:
+        - name: takecare
+          image: alanjose2929/takecare:1
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DEBUG
+              value: "False"
+            - name: ALLOWED_HOSTS
+              value: "*"
+            - name: DB_HOST
+              value: takecare-mysql
+            - name: DB_NAME
+              value: takecare
+            - name: DB_USER
+              value: root
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: takecare-db
+                  key: password
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: takecare
+spec:
+  type: LoadBalancer
+  selector:
+    app: takecare
+  ports:
+    - port: 80
+      targetPort: 8000
