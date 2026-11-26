@@ -81,7 +81,7 @@ pipeline {
             sed -i "s|image: alanjose2929/takecare:.*|image: $IMAGE:$TAG|" k8s/deployment.yaml
             git config user.name jenkins-bot
             git config user.email jenkins-bot@example.com
-            git commit -am "Deploy $TAG"
+            git diff --quiet ||git commit -am "Deploy $TAG"
             git push https://$GH_USER:$GH_TOKEN@github.com/AlanJose2712/takecare.git HEAD:main
           '''
         }
