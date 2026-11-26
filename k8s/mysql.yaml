@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: takecare-mysql-pvc
 spec:
+  storageClassName: gp3
   accessModes:
     - ReadWriteOnce
   resources:
