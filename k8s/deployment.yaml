@@ -18,7 +18,7 @@ spec:
           command: ['sh', '-c', 'until nc -z takecare-mysql 3306; do echo waiting for mysql; sleep 3; done']
       containers:
         - name: takecare
-          image: alanjose2929/takecare:1
+          image: alanjose2929/takecare:2
           ports:
             - containerPort: 8000
           env:
